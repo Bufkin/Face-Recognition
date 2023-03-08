@@ -1,3 +1,5 @@
+#! /usr/bin/env/python311
+
 import face_recognition as fr
 import os
 import cv2
@@ -48,11 +50,12 @@ def classify_face(im):
     known_face_names = list(faces.keys())
 
     img = cv2.imread(im, 1)
-    #img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
-    #img = img[:,:,::-1]
- 
+    # img = cv2.resize(img, (0, 0), fx=0.5, fy=0.5)
+    # img = img[:,:,::-1]
+
     face_locations = face_recognition.face_locations(img)
-    unknown_face_encodings = face_recognition.face_encodings(img, face_locations)
+    unknown_face_encodings = face_recognition.face_encodings(
+        img, face_locations)
 
     face_names = []
     for face_encoding in unknown_face_encodings:
@@ -61,7 +64,8 @@ def classify_face(im):
         name = "Unknown"
 
         # use the known face with the smallest distance to the new face
-        face_distances = face_recognition.face_distance(faces_encoded, face_encoding)
+        face_distances = face_recognition.face_distance(
+            faces_encoded, face_encoding)
         best_match_index = np.argmin(face_distances)
         if matches[best_match_index]:
             name = known_face_names[best_match_index]
@@ -70,22 +74,23 @@ def classify_face(im):
 
         for (top, right, bottom, left), name in zip(face_locations, face_names):
             # Draw a box around the face
-            cv2.rectangle(img, (left-20, top-20), (right+20, bottom+20), (255, 0, 0), 2)
+            cv2.rectangle(img, (left-20, top-20),
+                          (right+20, bottom+20), (255, 0, 0), 2)
 
             # Draw a label with a name below the face
-            cv2.rectangle(img, (left-20, bottom -15), (right+20, bottom+20), (255, 0, 0), cv2.FILLED)
+            cv2.rectangle(img, (left-20, bottom - 15),
+                          (right+20, bottom+20), (255, 0, 0), cv2.FILLED)
             font = cv2.FONT_HERSHEY_DUPLEX
-            cv2.putText(img, name, (left -20, bottom + 15), font, 1.0, (255, 255, 255), 2)
-
+            cv2.putText(img, name, (left - 20, bottom + 15),
+                        font, 1.0, (255, 255, 255), 2)
 
     # Display the resulting image
     while True:
 
         cv2.imshow('Video', img)
         if cv2.waitKey(1) & 0xFF == ord('q'):
-            return face_names 
+            return face_names
 
 
-print(classify_face("test.jpg"))
-
-
+if __name__ == '__main__':
+    print(classify_face("test.jpg"))
